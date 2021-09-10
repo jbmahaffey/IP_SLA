@@ -4,16 +4,17 @@ import time, requests, syslog, subprocess
 
 
 def Main():
-    HttpURI=[{'url': 'http://google.com', 'source': '172.17.101.50'}, {'url': 'http://yahoo.com', 'source': '172.17.101.50'}]
+    info=[{'url': 'http://google.com', 'source': '172.17.101.50', 'failscript': 'fail_commands', 'primarycommands': 'primary_commands'}, 
+                {'url': 'http://yahoo.com', 'source': '172.17.101.50', 'failscript': 'fail_commands', 'primarycommands': 'primary_commands'}]
     prox=''
     Httptimeout=0.500
     HttpInterval=10
     status=0
 
     while True:
-        for source in HttpURI:
+        for source in info:
             s = Source(source['source'])
-        for url in HttpURI:
+        for url in info:
             try:
                 if prox != '':
                     proxy = {'http': prox}
@@ -24,33 +25,31 @@ def Main():
                     if status == 0:
                         ()
                     else:
-                        status = Failback()
+                        status = Failback(url['primarycommands'])
                         syslog.openlog( 'IP SLA', 0, syslog.LOG_LOCAL4 )
                         syslog.syslog('%IP-SLA-8-CHANGE: {0} {1} URL now available'.format(resp.status_code, url['url']))
                 else:
                     if status == 1:
                         ()
                     elif status == 0:
-                        status = Failure()
+                        status = Failure(url['failscript'])
                         syslog.openlog('IP SLA', 0, syslog.LOG_LOCAL4 )
                         syslog.syslog('%IP-SLA-9-CHANGE: {0} {1} URL unavailable'.format(resp.status_code, url['url']))
             except:
                 if status == 1:
                     ()
                 else:
-                    status = Failure()
+                    status = Failure(url['failscript'])
                     syslog.openlog('IP SLA', 0, syslog.LOG_LOCAL4 )
                     syslog.syslog('%IP-SLA-9-CHANGE: Error with connection.')
         time.sleep(HttpInterval)    
 
-def Failure():
-    failscript='fail_commands'
+def Failure(failscript):
     subprocess.check_output('sudo ip netns exec default FastCli /mnt/flash/%s' % (failscript),shell=True)
     return 1
 
-def Failback():
-    primaryscript='primary_commands'
-    subprocess.check_output('sudo ip netns exec default FastCli /mnt/flash/%s' % (primaryscript),shell=True)
+def Failback(primarycommands):
+    subprocess.check_output('sudo ip netns exec default FastCli /mnt/flash/%s' % (primarycommands),shell=True)
     return 0    
 
 def Source(source) -> requests.Session:
