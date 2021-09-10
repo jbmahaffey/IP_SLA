@@ -12,10 +12,9 @@ def Main():
     status=0
 
     while True:
-        for source in info:
-            s = Source(source['source'])
         for url in info:
             try:
+                s = Source(url['source'])
                 if prox != '':
                     proxy = {'http': prox}
                     resp = s.get(url['url'], proxies=proxy, timeout=5)
