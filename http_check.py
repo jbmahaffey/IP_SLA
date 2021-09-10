@@ -24,7 +24,7 @@ def Main():
                     resp = s.get(url['url'], timeout=5)
                 # Check the response code for a 200 ok and make sure it was returned within the desired timeout
                 if resp.status_code == 200 and resp.elapsed.total_seconds() <= Httptimeout:
-                    # Determine if a failback is required by checking if the status value is 1 due to a failure
+                    # Determine if a failback is required by checking if the current url is in the failed list due to a failure
                     if url['url'] in failed:
                         Failback(url['primaryscript'], url['url'])
                         failed.remove(url['url'])
