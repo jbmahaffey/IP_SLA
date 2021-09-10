@@ -4,8 +4,8 @@ import time, requests, syslog, subprocess
 
 
 def Main():
-    info=[{'url': 'http://google.com', 'source': '172.17.101.50', 'failscript': 'fail_commands', 'primarycommands': 'primary_commands'}, 
-                {'url': 'http://yahoo.com', 'source': '172.17.101.50', 'failscript': 'fail_commands', 'primarycommands': 'primary_commands'}]
+    info=[{'url': 'http://google.com', 'source': '172.17.101.50', 'failscript': 'fail_commands', 'primaryscript': 'primary_commands'}, 
+                {'url': 'http://yahoo.com', 'source': '172.17.101.50', 'failscript': 'fail_commands', 'primaryscript': 'primary_commands'}]
     prox=''
     Httptimeout=0.500
     HttpInterval=10
@@ -25,7 +25,7 @@ def Main():
                     if status == 0:
                         ()
                     else:
-                        status = Failback(url['primarycommands'])
+                        status = Failback(url['primaryscript'])
                         syslog.openlog( 'IP SLA', 0, syslog.LOG_LOCAL4 )
                         syslog.syslog('%IP-SLA-8-CHANGE: {0} {1} URL now available'.format(resp.status_code, url['url']))
                 else:
@@ -48,8 +48,8 @@ def Failure(failscript):
     subprocess.check_output('sudo ip netns exec default FastCli /mnt/flash/%s' % (failscript),shell=True)
     return 1
 
-def Failback(primarycommands):
-    subprocess.check_output('sudo ip netns exec default FastCli /mnt/flash/%s' % (primarycommands),shell=True)
+def Failback(primaryscript):
+    subprocess.check_output('sudo ip netns exec default FastCli /mnt/flash/%s' % (primaryscript),shell=True)
     return 0    
 
 def Source(source) -> requests.Session:
