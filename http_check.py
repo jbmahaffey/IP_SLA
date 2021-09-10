@@ -4,9 +4,8 @@ import time, requests, syslog, subprocess
 
 
 def Main():
-    info=[{'url': 'http://google.com', 'source': '172.17.101.50', 'failscript': 'fail_commands', 'primaryscript': 'primary_commands'}, 
-            {'url': 'http://yahoo.com', 'source': '172.17.101.50', 'failscript': 'fail_commands', 'primaryscript': 'primary_commands'}]
-    prox=''
+    info=[{'url': 'http://google.com', 'source': '172.17.101.50', 'prox': '', 'failscript': 'fail_commands', 'primaryscript': 'primary_commands'}, 
+            {'url': 'http://yahoo.com', 'source': '172.17.101.50', 'prox': '192.168.101.2:8888', 'failscript': 'fail_commands', 'primaryscript': 'primary_commands'}]
     Httptimeout=0.500
     HttpInterval=10
     status=0
@@ -18,8 +17,8 @@ def Main():
                 # specify the source ip to use in the request
                 s = Source(url['source'])
                 # check if a proxy is required and if so make the request using the proper proxy
-                if prox != '':
-                    proxy = {'http': prox}
+                if url['prox'] != '':
+                    proxy = {'http': url['prox']}
                     resp = s.get(url['url'], proxies=proxy, timeout=5)
                 else:
                     # If no proxy is required then make the request without a proxy
