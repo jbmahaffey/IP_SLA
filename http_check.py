@@ -5,7 +5,7 @@ import time, requests, syslog, subprocess
 
 def Main():
     info=[{'url': 'http://google.com', 'source': '172.17.101.50', 'failscript': 'fail_commands', 'primaryscript': 'primary_commands'}, 
-                {'url': 'http://yahoo.com', 'source': '172.17.101.50', 'failscript': 'fail_commands', 'primaryscript': 'primary_commands'}]
+            {'url': 'http://yahoo.com', 'source': '172.17.101.50', 'failscript': 'fail_commands', 'primaryscript': 'primary_commands'}]
     prox=''
     Httptimeout=0.500
     HttpInterval=10
