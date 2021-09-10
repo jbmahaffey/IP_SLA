@@ -10,47 +10,58 @@ def Main():
     Httptimeout=0.500
     HttpInterval=10
     status=0
+    failed = []
 
     while True:
         for url in info:
             try:
+                # specify the source ip to use in the request
                 s = Source(url['source'])
+                # check if a proxy is required and if so make the request using the proper proxy
                 if prox != '':
                     proxy = {'http': prox}
                     resp = s.get(url['url'], proxies=proxy, timeout=5)
                 else:
+                    # If no proxy is required then make the request without a proxy
                     resp = s.get(url['url'], timeout=5)
+                # Check the response code for a 200 ok and make sure it was returned within the desired timeout
                 if resp.status_code == 200 and resp.elapsed.total_seconds() <= Httptimeout:
-                    if status == 0:
+                    # Determine if a failback is required by checking if the status value is 1 due to a failure
+                    if url['url'] in failed:
+                        Failback(url['primaryscript'], url['url'])
+                        failed.remove(url['url'])
+                    else:
+                        ()
+                # If the response code is anything other than 200 ok connection has failed and we need to run the failscript
+                else:
+                    # Keeps the failscript from running if it has already run 
+                    if url['url'] in failed:
                         ()
                     else:
-                        status = Failback(url['primaryscript'])
-                        syslog.openlog( 'IP SLA', 0, syslog.LOG_LOCAL4 )
-                        syslog.syslog('%IP-SLA-8-CHANGE: {0} {1} URL now available'.format(resp.status_code, url['url']))
-                else:
-                    if status == 1:
-                        ()
-                    elif status == 0:
-                        status = Failure(url['failscript'])
-                        syslog.openlog('IP SLA', 0, syslog.LOG_LOCAL4 )
-                        syslog.syslog('%IP-SLA-9-CHANGE: {0} {1} URL unavailable'.format(resp.status_code, url['url']))
+                        Failure(url['failscript'], url['url'])
+                        failed.append(url['url'])
+            # If there is an error trying to connect to url that is unhandled then fail
             except:
-                if status == 1:
+                if url['url'] in failed:
                     ()
                 else:
-                    status = Failure(url['failscript'])
-                    syslog.openlog('IP SLA', 0, syslog.LOG_LOCAL4 )
-                    syslog.syslog('%IP-SLA-9-CHANGE: Error with connection.')
+                    Failure(url['failscript'], url['url'])
+                    failed.append(url['url'])
         time.sleep(HttpInterval)    
 
-def Failure(failscript):
+# Failscript execution
+def Failure(failscript, url):
     subprocess.check_output('sudo ip netns exec default FastCli /mnt/flash/%s' % (failscript),shell=True)
-    return 1
+    syslog.openlog('IP SLA', 0, syslog.LOG_LOCAL4 )
+    syslog.syslog('%IP-SLA-9-CHANGE: {0} URL unavailable'.format(url))
 
-def Failback(primaryscript):
+# Failback execution
+def Failback(primaryscript, url):
     subprocess.check_output('sudo ip netns exec default FastCli /mnt/flash/%s' % (primaryscript),shell=True)
-    return 0    
+    syslog.openlog( 'IP SLA', 0, syslog.LOG_LOCAL4 )
+    syslog.syslog('%IP-SLA-8-CHANGE: {0} URL now available'.format(url))  
 
+# Set source IP binding for requests
 def Source(source) -> requests.Session:
     session = requests.Session()
     for prefix in ('http://', 'https://'):
