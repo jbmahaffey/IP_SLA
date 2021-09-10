@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os, re, time, requests, signal, syslog, subprocess, socket
+import time, requests, syslog, subprocess
 
 
 def Main():
