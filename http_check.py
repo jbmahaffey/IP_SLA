@@ -4,37 +4,36 @@ import time, requests, syslog, subprocess
 
 
 def Main():
-    HttpURI=['http://google.com', 'http://yahoo.com']
+    HttpURI=[{'url': 'http://google.com', 'source': '172.17.101.50'}, {'url': 'http://yahoo.com', 'source': '172.17.101.50'}]
     prox=''
     Httptimeout=0.500
     HttpInterval=10
     status=0
-    sourceIP='172.17.101.50'
-
-    s = Source(sourceIP)
 
     while True:
+        for source in HttpURI:
+            s = Source(source['source'])
         for url in HttpURI:
             try:
                 if prox != '':
                     proxy = {'http': prox}
-                    resp = requests.get(url, proxies=proxy, timeout=5)
+                    resp = s.get(url['url'], proxies=proxy, timeout=5)
                 else:
-                    resp = requests.get(url, timeout=5)
+                    resp = s.get(url['url'], timeout=5)
                 if resp.status_code == 200 and resp.elapsed.total_seconds() <= Httptimeout:
                     if status == 0:
                         ()
                     else:
                         status = Failback()
                         syslog.openlog( 'IP SLA', 0, syslog.LOG_LOCAL4 )
-                        syslog.syslog('%IP-SLA-8-CHANGE: {0} {1} URL now available'.format(resp.status_code, url))
+                        syslog.syslog('%IP-SLA-8-CHANGE: {0} {1} URL now available'.format(resp.status_code, url['url']))
                 else:
                     if status == 1:
                         ()
                     elif status == 0:
                         status = Failure()
                         syslog.openlog('IP SLA', 0, syslog.LOG_LOCAL4 )
-                        syslog.syslog('%IP-SLA-9-CHANGE: {0} {1} URL unavailable'.format(resp.status_code, url))
+                        syslog.syslog('%IP-SLA-9-CHANGE: {0} {1} URL unavailable'.format(resp.status_code, url['url']))
             except:
                 if status == 1:
                     ()
