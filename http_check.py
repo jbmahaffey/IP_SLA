@@ -7,7 +7,7 @@ def Main():
     info=[{'url': 'http://google.com', 'source': '172.17.101.50', 'prox': '', 'failscript': 'fail_commands', 'primaryscript': 'primary_commands'}, 
             {'url': 'http://yahoo.com', 'source': '172.17.101.50', 'prox': '192.168.101.2:8888', 'failscript': 'fail_commands', 'primaryscript': 'primary_commands'}]
     Httptimeout=0.500
-    HttpInterval=10
+    HttpInterval=5
     failed = []
 
     while True:
