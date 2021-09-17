@@ -1,11 +1,11 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import time, requests, syslog, subprocess
 
 
 def Main():
-    info=[{'url': 'http://google.com', 'source': '172.17.101.50', 'prox': '', 'failscript': 'fail_commands', 'primaryscript': 'primary_commands'}, 
-            {'url': 'http://yahoo.com', 'source': '172.17.101.50', 'prox': '192.168.101.2:8888', 'failscript': 'fail_commands', 'primaryscript': 'primary_commands'}]
+    info=[{'url': 'http://google.com', 'source': '172.16.50.1', 'prox': '', 'failscript': 'fail_commands', 'primaryscript': 'primary_commands'}, 
+            {'url': 'http://yahoo.com', 'source': '172.16.51.1', 'prox': '', 'failscript': 'fail_commands', 'primaryscript': 'primary_commands'}]
     Httptimeout=0.500
     HttpInterval=5
     failed = []
@@ -25,26 +25,26 @@ def Main():
                 # Check the response code for a 200 ok and make sure it was returned within the desired timeout
                 if resp.status_code == 200 and resp.elapsed.total_seconds() <= Httptimeout:
                     # Determine if a failback is required by checking if the current url is in the failed list due to a failure
-                    if url['url'] in failed:
+                    if url['source'] in failed:
                         Failback(url['primaryscript'], url['url'])
-                        failed.remove(url['url'])
+                        failed.remove(url['source'])
                     else:
                         ()
                 # If the response code is anything other than 200 ok connection has failed and we need to run the failscript
                 else:
                     # Keeps the failscript from running if it has already run 
-                    if url['url'] in failed:
+                    if url['source'] in failed:
                         ()
                     else:
                         Failure(url['failscript'], url['url'])
-                        failed.append(url['url'])
+                        failed.append(url['source'])
             # If there is an error trying to connect to url that is unhandled then fail
             except:
-                if url['url'] in failed:
+                if url['source'] in failed:
                     ()
                 else:
                     Failure(url['failscript'], url['url'])
-                    failed.append(url['url'])
+                    failed.append(url['source'])
         time.sleep(HttpInterval)    
 
 # Failscript execution
