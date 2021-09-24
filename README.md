@@ -20,3 +20,9 @@ Variables explained below:
             ###############################
             #                             #
             ###############################
+
+To install the script copy the http_check.py and the command files to the /mnt/flash directory.  Make sure the proper permissions are applied by issuing the command chmod +x /mnt/flash/http_check.py from bash.  Once the script and the command files are copied to the device you can setup the script to run using an event-handler as shown below. 
+
+            event-handler HTTP-CHECK
+            trigger on-boot
+            action bash /mnt/flash/http_check.py
