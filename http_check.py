@@ -11,11 +11,11 @@ def Main():
             {'url': 'http://yahoo.com', 'source': '172.16.51.1', 'prox': '', 'failscript': 'fail_commands2', 'primaryscript': 'primary_commands2'}]
     Httptimeout=0.500
     HttpInterval=5
-    failed = []
     ###############################
     #                             #
     ###############################
 
+    failed = []
     while True:
         for url in info:
             try:
