@@ -8,7 +8,7 @@ def Main():
     #   Modify This Section       #
     ###############################
     info=[{'url': 'http://google.com', 'source': '172.16.50.1', 'prox': '', 'failscript': 'fail_commands', 'primaryscript': 'primary_commands'}, 
-            {'url': 'http://yahoo.com', 'source': '172.16.51.1', 'prox': '', 'failscript': 'fail_commands', 'primaryscript': 'primary_commands'}]
+            {'url': 'http://yahoo.com', 'source': '172.16.51.1', 'prox': '', 'failscript': 'fail_commands2', 'primaryscript': 'primary_commands2'}]
     Httptimeout=0.500
     HttpInterval=5
     failed = []
