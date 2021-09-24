@@ -13,7 +13,7 @@ Variables explained below:
             #   Modify This Section       #
             ###############################
             info=[{'url': '***URL***', 'source': '***Source IP***', 'prox': '***Proxy If Required***', 'failscript': '***Commands File if Failed***', 'primaryscript': '***Commands File if Recovered***'}, 
-                 {'url': '***URL***', 'source': '***Source IP***', 'prox': '***Proxy If Required***', 'failscript': '***Commands File if Failed***', 'primaryscript': '***Proxy If Required***'}]
+                 {'url': '***URL***', 'source': '***Source IP***', 'prox': '***Proxy If Required***', 'failscript': '***Commands File if Failed***', 'primaryscript': '***Commands File if Recovered***'}]
             Httptimeout=***Time Out***
             HttpInterval=***Interval Between Check***
             failed = []
