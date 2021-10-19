@@ -57,13 +57,13 @@ def Main():
 def Failure(failscript, url):
     subprocess.check_output('sudo ip netns exec default FastCli /mnt/flash/%s' % (failscript),shell=True)
     syslog.openlog('IP SLA', 0, syslog.LOG_LOCAL4 )
-    syslog.syslog('%IP-SLA-9-CHANGE: {0} URL unavailable'.format(url))
+    syslog.syslog('%IP-SLA-3-CHANGE: {0} URL unavailable'.format(url))
 
 # Failback execution
 def Failback(primaryscript, url):
     subprocess.check_output('sudo ip netns exec default FastCli /mnt/flash/%s' % (primaryscript),shell=True)
     syslog.openlog( 'IP SLA', 0, syslog.LOG_LOCAL4 )
-    syslog.syslog('%IP-SLA-8-CHANGE: {0} URL now available'.format(url))  
+    syslog.syslog('%IP-SLA-3-CHANGE: {0} URL now available'.format(url))  
 
 # Set source IP binding for requests
 def Source(source) -> requests.Session:
